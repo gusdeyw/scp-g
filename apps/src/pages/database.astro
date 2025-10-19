@@ -1,0 +1,178 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<Layout>
+    <body class="bg-gray-800 font-sans leading-normal tracking-normal">
+        <Navbar />
+
+        <div class="flex flex-col md:flex-row">
+            <Sidebar />
+
+            <!-- Main Content -->
+            <div class="main-content flex-1 bg-gray-100 pb-24 md:pb-5">
+                <div class="bg-gray-800 pt-3">
+                    <div
+                        class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white"
+                    >
+                        <h3 class="font-bold pl-2">Database Connection</h3>
+                    </div>
+                </div>
+
+                <!-- Database Content -->
+                <div class="px-6">
+                    <div class="grid grid-cols-2 gap-10 mt-4">
+                        <div>
+                            <form class="">
+                                <div class="mb-4">
+                                    <label
+                                        class="block text-gray-700 text-sm font-bold mb-2"
+                                        for="hostname"
+                                    >
+                                        Host Name
+                                    </label>
+                                    <input
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="hostname"
+                                        type="text"
+                                        placeholder="Host Name"
+                                    />
+                                </div>
+                                <div class="mb-4">
+                                    <label
+                                        class="block text-gray-700 text-sm font-bold mb-2"
+                                        for="username"
+                                    >
+                                        Username
+                                    </label>
+                                    <input
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="username"
+                                        type="text"
+                                        placeholder="Username"
+                                    />
+                                </div>
+                                <div class="mb-4">
+                                    <label
+                                        class="block text-gray-700 text-sm font-bold mb-2"
+                                        for="password"
+                                    >
+                                        Password
+                                    </label>
+                                    <input
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="password"
+                                        type="password"
+                                        placeholder="Password"
+                                    />
+                                </div>
+                                <div class="flex items-center justify-left">
+                                    <button
+                                        id="cancelButton"
+                                        class="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-4 mr-2 rounded focus:outline-none focus:shadow-outline"
+                                        type="button"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        id="testButton"
+                                        class="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 mx-2 rounded focus:outline-none focus:shadow-outline"
+                                        type="button"
+                                    >
+                                        Test
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="px-6 mt-20 font-bold text-gray-600">
+                        Created with <i
+                            class="em em-cupid"
+                            aria-role="presentation"
+                            aria-label="HEART WITH ARROW"></i> by SCP Generator Team
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const testButton = document.getElementById(
+                    "testButton",
+                ) as HTMLButtonElement;
+                const cancelButton = document.getElementById(
+                    "cancelButton",
+                ) as HTMLButtonElement;
+                const hostnameInput = document.getElementById(
+                    "hostname",
+                ) as HTMLInputElement;
+                const usernameInput = document.getElementById(
+                    "username",
+                ) as HTMLInputElement;
+                const passwordInput = document.getElementById(
+                    "password",
+                ) as HTMLInputElement;
+                const consoleArea = document.getElementById(
+                    "console",
+                ) as HTMLTextAreaElement;
+
+                testButton?.addEventListener("click", function () {
+                    const dt = new Date();
+                    const time =
+                        dt.getHours() +
+                        ":" +
+                        dt.getMinutes() +
+                        ":" +
+                        dt.getSeconds();
+                    const hostname = hostnameInput?.value || "";
+                    const username = usernameInput?.value || "";
+                    const password = passwordInput?.value || "";
+
+                    // Simulate database connection
+                    const v = consoleArea?.value || "";
+                    if (hostname && username && password) {
+                        consoleArea.value =
+                            "---------------------------------------\n" +
+                            time +
+                            "/User> DB Connect Success \n" +
+                            v;
+                        hostnameInput.disabled = true;
+                        usernameInput.disabled = true;
+                        passwordInput.disabled = true;
+                    } else {
+                        consoleArea.value =
+                            "---------------------------------------\n" +
+                            time +
+                            "/User> Failed, Please fill all fields\n" +
+                            v;
+                    }
+                });
+
+                cancelButton?.addEventListener("click", function () {
+                    const dt = new Date();
+                    const time =
+                        dt.getHours() +
+                        ":" +
+                        dt.getMinutes() +
+                        ":" +
+                        dt.getSeconds();
+                    hostnameInput.disabled = false;
+                    usernameInput.disabled = false;
+                    passwordInput.disabled = false;
+                    const v = consoleArea?.value || "";
+                    consoleArea.value =
+                        "---------------------------------------\n" +
+                        time +
+                        "/User> Connection Reset, Connect again\n" +
+                        v;
+                });
+            });
+        </script>
+    </body>
+</Layout>

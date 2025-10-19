@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/gusdeyw/scp-g/blob/main/README.md
+    about: Check the README for common questions and setup instructions
+  - name: 💬 Discussions
+    url: https://github.com/gusdeyw/scp-g/discussions
+    about: Ask questions and discuss ideas in GitHub Discussions
+  - name: 🆘 Security Issues
+    url: https://github.com/gusdeyw/scp-g/security/advisories/new
+    about: Report security vulnerabilities privately

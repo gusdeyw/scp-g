@@ -1,0 +1,359 @@
+{
+    "info": {
+        "name": "SCP-G Production API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Postman collection for testing the SCP-G Flask API with SQLite database"
+    },
+    "item": [
+        {
+            "name": "Home",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        ""
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Config",
+            "item": [
+                {
+                    "name": "Get All Configs",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "config"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Config by var_conf",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/config/{{var_conf}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "config",
+                                "{{var_conf}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Config",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"value_conf\": \"Updated Value\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/config/{{var_conf}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "config",
+                                "{{var_conf}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Model",
+            "item": [
+                {
+                    "name": "Get All Models",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Model",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"table_code\": \"users\",\n  \"table_name\": \"Users Table\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/model",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Model by table_code",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model/{{table_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model",
+                                "{{table_code}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Model",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"table_name\": \"Updated Users Table\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/model/{{table_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model",
+                                "{{table_code}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Model",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model/{{table_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model",
+                                "{{table_code}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Model Detail",
+            "item": [
+                {
+                    "name": "Get All Model Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model_detail",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model_detail"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Model Detail",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"model_code\": \"users\",\n  \"model_detail_code\": \"id\",\n  \"model_detail_name\": \"User ID\",\n  \"model_detail_type\": \"id\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/model_detail",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model_detail"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Model Detail by model_detail_code",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model_detail/{{model_detail_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model_detail",
+                                "{{model_detail_code}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Model Detail",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"model_code\": \"users\",\n  \"model_detail_name\": \"User Name\",\n  \"model_detail_type\": \"varchar\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/model_detail/{{model_detail_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model_detail",
+                                "{{model_detail_code}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Model Detail",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/model_detail/{{model_detail_code}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "model_detail",
+                                "{{model_detail_code}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Generate Go",
+            "item": [
+                {
+                    "name": "Generate Go Project",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/generate_go",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "generate_go"
+                            ]
+                        },
+                        "description": "Generates a complete Go project with Fiber framework based on defined models and model details. Returns a ZIP file containing the generated code."
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:5000",
+            "type": "string"
+        },
+        {
+            "key": "var_conf",
+            "value": "LANG",
+            "type": "string"
+        },
+        {
+            "key": "table_code",
+            "value": "users",
+            "type": "string"
+        },
+        {
+            "key": "model_detail_code",
+            "value": "id",
+            "type": "string"
+        }
+    ]
+}
