@@ -62,9 +62,33 @@ npm run preview  # Preview production build
 - **Language**: Python
 
 ### API Endpoints
-- `GET /` - Welcome message
-- `GET /api/data` - Retrieve sample data
-- `POST /api/data` - Create new data entry
+
+The Flask backend provides RESTful API endpoints for managing configurations, models, model details, and code generation. All endpoints return JSON responses.
+
+#### Root Endpoint
+- `GET /` - Returns a welcome message for the Production API
+
+#### Configuration Endpoints
+- `GET /api/config` - Retrieve all configuration entries
+- `GET /api/config/<var_conf>` - Retrieve a specific configuration entry by variable name
+- `PUT /api/config/<var_conf>` - Update a configuration entry's value (requires `value_conf` in request body)
+
+#### Model Endpoints
+- `GET /api/model` - Retrieve all models (tables)
+- `POST /api/model` - Create a new model (requires `table_code` and `table_name` in request body)
+- `GET /api/model/<table_code>` - Retrieve a specific model by table code
+- `PUT /api/model/<table_code>` - Update a model's name (requires `table_name` in request body)
+- `DELETE /api/model/<table_code>` - Delete a model by table code
+
+#### Model Detail Endpoints
+- `GET /api/model_detail` - Retrieve all model details (fields/columns)
+- `POST /api/model_detail` - Create a new model detail (requires `model_code`, `model_detail_code`, `model_detail_name`, and `model_detail_type` in request body; type must be 'varchar', 'int', or 'id')
+- `GET /api/model_detail/<model_detail_code>` - Retrieve a specific model detail by detail code
+- `PUT /api/model_detail/<model_detail_code>` - Update a model detail (requires `model_code`, `model_detail_name`, and `model_detail_type` in request body)
+- `DELETE /api/model_detail/<model_detail_code>` - Delete a model detail by detail code
+
+#### Code Generation Endpoints
+- `GET /api/generate_go` - Generate and download a Go project based on current models and configuration (requires LANG config set to 'Go')
 
 ### Running the Backend
 ```bash
