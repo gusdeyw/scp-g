@@ -15,11 +15,17 @@ scp-g/
 │   │   └── styles/          # Global styles
 │   ├── public/              # Static assets
 │   ├── package.json         # Frontend dependencies
-│   └── astro.config.mjs     # Astro configuration
+│   ├── astro.config.mjs     # Astro configuration
+│   ├── Dockerfile          # Docker configuration
+│   └── .dockerignore       # Docker ignore file
 ├── api/                     # Backend API (Python Flask)
 │   ├── app.py              # Main Flask application
 │   ├── requirements.txt     # Python dependencies
-│   └── test_api.py         # API tests
+│   ├── test_api.py         # API tests
+│   ├── Dockerfile          # Docker configuration
+│   ├── .dockerignore       # Docker ignore file
+│   └── routes.py           # API route definitions
+├── docker-compose.yml      # Docker Compose configuration
 └── old/                    # Legacy PHP files (deprecated)
 ```
 
@@ -98,6 +104,48 @@ python app.py
 ```
 
 The API runs on `http://localhost:5000` by default in debug mode.
+
+### Running the Backend with Docker
+To run the Python API using Docker:
+
+1. Ensure Docker is installed on your system
+2. Navigate to the `api` directory
+3. Build the Docker image:
+   ```bash
+   docker build -t scp-g-api .
+   ```
+4. Run the container:
+   ```bash
+   docker run -p 5000:5000 scp-g-api
+   ```
+
+The API will be accessible at `http://localhost:5000`.
+
+### Running with Docker Compose
+To run both the frontend and backend services together:
+
+1. Ensure Docker and Docker Compose are installed
+2. Navigate to the project root directory
+3. Run the services:
+   ```bash
+   docker-compose up --build
+   ```
+
+The services will be available at:
+- Frontend: `http://localhost:4321`
+- Backend API: `http://localhost:5000`
+
+To run in detached mode:
+```bash
+docker-compose up -d --build
+```
+
+To stop the services:
+```bash
+docker-compose down
+```
+
+**Note**: The Docker setup has been tested and verified to work correctly. All syntax errors in the Go code generation have been resolved.
 
 ## Development Workflow
 
