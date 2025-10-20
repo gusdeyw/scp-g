@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - api_data:/app
+    networks:
+      - scp-g-network
+    environment:
+      - FLASK_ENV=production
+
+  apps:
+    build:
+      context: ./apps
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    depends_on:
+      - api
+    networks:
+      - scp-g-network
+
+volumes:
+  api_data:
+
+
+networks:
+  scp-g-network:
+    driver: bridge
