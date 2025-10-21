@@ -1,0 +1,119 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<Layout>
+    <body class="bg-gray-800 font-sans leading-normal tracking-normal">
+        <Navbar />
+        <div class="flex flex-col md:flex-row">
+            <Sidebar />
+            <div class="main-content flex-1 bg-gray-100 pb-24 md:pb-5">
+                <div class="bg-white rounded-lg shadow m-6 p-6">
+                    <h2 class="text-xl font-semibold mb-4">Configuration</h2>
+                    <div id="status" class="mb-4 text-sm"></div>
+                    <div id="configs" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // @ts-nocheck
+            // Use a runtime global if set, otherwise default to localhost
+            const baseUrl =
+                /** @type {any} */ (window).__API_BASE__ ||
+                "http://localhost:5000";
+
+            /**
+             * Helper to get element by id
+             * @param {string} id
+             * @returns {HTMLElement | null}
+             */
+            function el(id) {
+                return document.getElementById(id);
+            }
+
+            async function fetchConfigs() {
+                try {
+                    const res = await fetch(`${baseUrl}/api/config`);
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const container = el("configs");
+                    if (!container) return;
+                    container.innerHTML = "";
+                    data.forEach((/** @type {any} */ conf) => {
+                        const c = /** @type {any} */ (conf);
+                        const row = document.createElement("div");
+                        row.className = "flex items-center space-x-4";
+                        const inputId = `val-${c.var_conf}`;
+                        row.innerHTML = `
+                            <div class="flex-1">
+                                <div class="text-sm text-gray-600">${c.var_conf}</div>
+                                <input id="${inputId}" class="w-full border rounded p-2 mt-1" value="${c.value_conf}" />
+                            </div>
+                            <div>
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded" data-var="${c.var_conf}">Save</button>
+                            </div>
+                        `;
+                        const btn = row.querySelector("button");
+                        if (btn)
+                            btn.addEventListener("click", () =>
+                                saveConfig(c.var_conf),
+                            );
+                        container.appendChild(row);
+                    });
+                } catch (e) {
+                    console.error("fetchConfigs", e);
+                }
+            }
+
+            /** @param {string} varConf */
+            async function saveConfig(varConf) {
+                const input = /** @type {HTMLInputElement | null} */ (
+                    el(`val-${varConf}`)
+                );
+                if (!input) return;
+                const btn = /** @type {HTMLButtonElement | null} */ (
+                    document.querySelector(`button[data-var="${varConf}"]`)
+                );
+                const statusEl = el("status");
+                if (!btn || !statusEl) return;
+
+                btn.disabled = true;
+                btn.textContent = "Saving...";
+                statusEl.textContent = "";
+
+                try {
+                    const value = input.value;
+                    const res = await fetch(
+                        `${baseUrl}/api/config/${varConf}`,
+                        {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ value_conf: value }),
+                        },
+                    );
+                    if (res.ok) {
+                        statusEl.textContent =
+                            "Configuration saved successfully.";
+                        statusEl.className = "mb-4 text-sm text-green-600";
+                    } else {
+                        const err = await res.json();
+                        statusEl.textContent =
+                            "Error: " + (err.error || res.statusText);
+                        statusEl.className = "mb-4 text-sm text-red-600";
+                    }
+                } catch (e) {
+                    statusEl.textContent = "Network error occurred.";
+                    statusEl.className = "mb-4 text-sm text-red-600";
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Save";
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", fetchConfigs);
+        </script>
+    </body>
+</Layout>

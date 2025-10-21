@@ -1,0 +1,89 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<Layout>
+    <body class="bg-gray-800 font-sans leading-normal tracking-normal">
+        <Navbar />
+        <div class="flex flex-col md:flex-row">
+            <Sidebar />
+            <div class="main-content flex-1 bg-gray-100 pb-24 md:pb-5">
+                <div class="bg-white rounded-lg shadow m-6 p-6">
+                    <h2 class="text-xl font-semibold mb-4">Generate</h2>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Click generate to create the project based on current
+                        models and download the ZIP.
+                    </p>
+
+                    <div id="status" class="mb-4"></div>
+                    <button
+                        id="generateBtn"
+                        class="bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+                        ><span id="btnText">Generate</span><span
+                            id="spinner"
+                            class="ml-2 hidden"
+                            ><i class="fas fa-spinner fa-spin"></i></span
+                        ></button
+                    >
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // @ts-nocheck
+            const baseUrl =
+                (window && window.__API_BASE__) || "http://localhost:5000";
+            /** @type {HTMLButtonElement | null} */
+            const btn = document.getElementById("generateBtn");
+            /** @type {HTMLElement | null} */
+            const status = document.getElementById("status");
+
+            async function generate() {
+                if (!btn || !status) return;
+                const btnText = document.getElementById("btnText");
+                const spinner = document.getElementById("spinner");
+                if (!btnText || !spinner) return;
+
+                btn.setAttribute("disabled", "");
+                btnText.textContent = "Generating...";
+                spinner.classList.remove("hidden");
+                status.innerText = "Preparing generation...";
+                try {
+                    const res = await fetch(`${baseUrl}/api/generate_go`);
+                    if (!res.ok) {
+                        let errText = res.statusText;
+                        try {
+                            const err = await res.json();
+                            errText = err.error || errText;
+                        } catch (e) {}
+                        status.innerText = "Error: " + errText;
+                        return;
+                    }
+
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "generated.zip";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                    status.innerText = "Download started";
+                } catch (e) {
+                    status.innerText =
+                        "Error: " +
+                        String(/** @type {any} */ (e)?.message ?? String(e));
+                } finally {
+                    btn.removeAttribute("disabled");
+                    btnText.textContent = "Generate";
+                    spinner.classList.add("hidden");
+                }
+            }
+
+            if (btn) btn.addEventListener("click", generate);
+        </script>
+    </body>
+</Layout>
