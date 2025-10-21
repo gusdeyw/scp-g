@@ -1,0 +1,368 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<Layout>
+    <body class="bg-gray-800 font-sans leading-normal tracking-normal">
+        <Navbar />
+        <div class="flex flex-col md:flex-row">
+            <Sidebar />
+            <div class="main-content flex-1 bg-gray-100 pb-24 md:pb-5">
+                <div class="bg-white rounded-lg shadow m-6 p-6">
+                    <h2 class="text-xl font-semibold mb-4">Models</h2>
+
+                    <form id="create-model" class="mb-4 flex space-x-2">
+                        <input
+                            id="table_code"
+                            placeholder="table_code"
+                            class="border rounded p-2"
+                        />
+                        <input
+                            id="table_name"
+                            placeholder="table_name"
+                            class="border rounded p-2 flex-1"
+                        />
+                        <button
+                            class="bg-green-600 text-white px-4 py-2 rounded"
+                            >Create</button
+                        >
+                    </form>
+
+                    <div id="models-list" class="space-y-3"></div>
+                    <div id="model-status" class="mt-4 text-sm"></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow m-6 p-6 mt-4">
+                    <h3 class="text-lg font-semibold mb-2">Model Details</h3>
+                    <form
+                        id="create-detail"
+                        class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-2"
+                    >
+                        <input
+                            id="detail_model_code"
+                            placeholder="model_code"
+                            class="border rounded p-2"
+                        />
+                        <input
+                            id="detail_code"
+                            placeholder="detail_code"
+                            class="border rounded p-2"
+                        />
+                        <input
+                            id="detail_name"
+                            placeholder="detail_name"
+                            class="border rounded p-2"
+                        />
+                        <select id="detail_type" class="border rounded p-2">
+                            <option value="varchar">varchar</option>
+                            <option value="int">int</option>
+                            <option value="id">id</option>
+                        </select>
+                        <div class="md:col-span-4">
+                            <button
+                                class="bg-green-600 text-white px-4 py-2 rounded"
+                                >Add Detail</button
+                            >
+                        </div>
+                    </form>
+
+                    <div id="details-list" class="space-y-3"></div>
+                    <div id="detail-status" class="mt-4 text-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // @ts-nocheck
+            const baseUrl =
+                (window && window.__API_BASE__) || "http://localhost:5000";
+
+            function el(id) {
+                return document.getElementById(id);
+            }
+
+            async function fetchModels() {
+                try {
+                    const res = await fetch(`${baseUrl}/api/model`);
+                    const data = await res.json();
+                    const list = el("models-list");
+                    if (!list) return;
+                    list.innerHTML = "";
+                    data.forEach((m) => {
+                        const div = document.createElement("div");
+                        div.className =
+                            "p-3 border rounded flex justify-between items-center";
+                        div.innerHTML = `
+                            <div class="flex-1">
+                                <input class="w-full border rounded p-1" value="${m.table_name}" data-code="${m.table_code}" placeholder="Table Name" />
+                                <div class="text-sm text-gray-600 mt-1">${m.table_code}</div>
+                            </div>
+                            <div class="space-x-2 ml-4">
+                                <button class="bg-yellow-500 text-white px-3 py-1 rounded text-sm" data-action="edit-model" data-code="${m.table_code}">Save</button>
+                                <button class="bg-red-600 text-white px-3 py-1 rounded text-sm" data-action="delete-model" data-code="${m.table_code}">Delete</button>
+                            </div>
+                        `;
+                        const editBtn = div.querySelector(
+                            '[data-action="edit-model"]',
+                        );
+                        const delBtn = div.querySelector(
+                            '[data-action="delete-model"]',
+                        );
+                        if (editBtn)
+                            editBtn.addEventListener("click", () =>
+                                updateModel(m.table_code, div),
+                            );
+                        if (delBtn)
+                            delBtn.addEventListener("click", () =>
+                                deleteModel(m.table_code),
+                            );
+                        list.appendChild(div);
+                    });
+                } catch (e) {
+                    console.error("fetchModels", e);
+                }
+            }
+
+            async function fetchDetails() {
+                try {
+                    const res = await fetch(`${baseUrl}/api/model_detail`);
+                    const data = await res.json();
+                    const list = el("details-list");
+                    if (!list) return;
+                    list.innerHTML = "";
+                    data.forEach((d) => {
+                        const div = document.createElement("div");
+                        div.className =
+                            "p-3 border rounded flex justify-between items-center";
+                        div.innerHTML = `
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <input class="border rounded p-1" value="${d.model_detail_name}" placeholder="Detail Name" data-field="name" />
+                                <select class="border rounded p-1" data-field="type">
+                                    <option value="varchar" ${d.model_detail_type === "varchar" ? "selected" : ""}>varchar</option>
+                                    <option value="int" ${d.model_detail_type === "int" ? "selected" : ""}>int</option>
+                                    <option value="id" ${d.model_detail_type === "id" ? "selected" : ""}>id</option>
+                                </select>
+                                <div class="text-sm text-gray-600">${d.model_code} · ${d.model_detail_code}</div>
+                            </div>
+                            <div class="space-x-2 ml-4">
+                                <button class="bg-yellow-500 text-white px-3 py-1 rounded text-sm" data-action="edit-detail" data-code="${d.model_detail_code}">Save</button>
+                                <button class="bg-red-600 text-white px-3 py-1 rounded text-sm" data-action="delete-detail" data-code="${d.model_detail_code}">Delete</button>
+                            </div>
+                        `;
+                        const editBtn = div.querySelector(
+                            '[data-action="edit-detail"]',
+                        );
+                        const delBtn = div.querySelector(
+                            '[data-action="delete-detail"]',
+                        );
+                        if (editBtn)
+                            editBtn.addEventListener("click", () =>
+                                updateDetail(d.model_detail_code, div),
+                            );
+                        if (delBtn)
+                            delBtn.addEventListener("click", () =>
+                                deleteDetail(d.model_detail_code),
+                            );
+                        list.appendChild(div);
+                    });
+                } catch (e) {
+                    console.error("fetchDetails", e);
+                }
+            }
+
+            const createModelForm = el("create-model");
+            if (createModelForm) {
+                createModelForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const table_code_el = el("table_code");
+                    const table_name_el = el("table_name");
+                    const table_code = table_code_el
+                        ? table_code_el.value.trim()
+                        : "";
+                    const table_name = table_name_el
+                        ? table_name_el.value.trim()
+                        : "";
+                    if (!table_code || !table_name)
+                        return alert("Both fields required");
+                    const res = await fetch(`${baseUrl}/api/model`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ table_code, table_name }),
+                    });
+                    if (res.ok) {
+                        if (table_code_el) table_code_el.value = "";
+                        if (table_name_el) table_name_el.value = "";
+                        fetchModels();
+                    } else {
+                        const err = await res.json();
+                        alert(err.error || "Error");
+                    }
+                });
+            }
+
+            const createDetailForm = el("create-detail");
+            if (createDetailForm) {
+                createDetailForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const mcode = el("detail_model_code");
+                    const dcode = el("detail_code");
+                    const dname = el("detail_name");
+                    const dtype = el("detail_type");
+                    const model_code = mcode ? mcode.value.trim() : "";
+                    const model_detail_code = dcode ? dcode.value.trim() : "";
+                    const model_detail_name = dname ? dname.value.trim() : "";
+                    const model_detail_type = dtype ? dtype.value : "varchar";
+                    if (!model_code || !model_detail_code || !model_detail_name)
+                        return alert("All fields required");
+                    const res = await fetch(`${baseUrl}/api/model_detail`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            model_code,
+                            model_detail_code,
+                            model_detail_name,
+                            model_detail_type,
+                        }),
+                    });
+                    if (res.ok) {
+                        if (mcode) mcode.value = "";
+                        if (dcode) dcode.value = "";
+                        if (dname) dname.value = "";
+                        fetchDetails();
+                    } else {
+                        const err = await res.json();
+                        alert(err.error || "Error");
+                    }
+                });
+            }
+
+            function updateModel(table_code, div) {
+                const input = div.querySelector("input");
+                if (!input) return;
+                const table_name = input.value.trim();
+                if (!table_name) return alert("Table name cannot be empty");
+                updateModelAPI(table_code, table_name);
+            }
+
+            async function updateModelAPI(table_code, table_name) {
+                const statusEl = el("model-status");
+                if (statusEl) statusEl.textContent = "";
+                const res = await fetch(`${baseUrl}/api/model/${table_code}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ table_name }),
+                });
+                if (res.ok) {
+                    if (statusEl) {
+                        statusEl.textContent = "Model updated successfully.";
+                        statusEl.className = "mt-4 text-sm text-green-600";
+                    }
+                    fetchModels();
+                } else {
+                    const err = await res.json();
+                    if (statusEl) {
+                        statusEl.textContent =
+                            "Error: " + (err.error || "Unknown error");
+                        statusEl.className = "mt-4 text-sm text-red-600";
+                    }
+                }
+            }
+
+            async function deleteModel(table_code) {
+                if (!confirm("Delete model " + table_code + "?")) return;
+                const statusEl = el("model-status");
+                if (statusEl) statusEl.textContent = "";
+                const res = await fetch(`${baseUrl}/api/model/${table_code}`, {
+                    method: "DELETE",
+                });
+                if (res.ok) {
+                    if (statusEl) {
+                        statusEl.textContent = "Model deleted successfully.";
+                        statusEl.className = "mt-4 text-sm text-green-600";
+                    }
+                    fetchModels();
+                } else {
+                    const err = await res.json();
+                    if (statusEl) {
+                        statusEl.textContent =
+                            "Error: " + (err.error || "Unknown error");
+                        statusEl.className = "mt-4 text-sm text-red-600";
+                    }
+                }
+            }
+
+            function updateDetail(code, div) {
+                const nameInput = div.querySelector('[data-field="name"]');
+                const typeSelect = div.querySelector('[data-field="type"]');
+                if (!nameInput || !typeSelect) return;
+                const model_detail_name = nameInput.value.trim();
+                const model_detail_type = typeSelect.value;
+                if (!model_detail_name)
+                    return alert("Detail name cannot be empty");
+                updateDetailAPI(code, model_detail_name, model_detail_type);
+            }
+
+            async function updateDetailAPI(
+                code,
+                model_detail_name,
+                model_detail_type,
+            ) {
+                const statusEl = el("detail-status");
+                if (statusEl) statusEl.textContent = "";
+                const res = await fetch(`${baseUrl}/api/model_detail/${code}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model_code: "",
+                        model_detail_name,
+                        model_detail_type,
+                    }), // model_code not changed
+                });
+                if (res.ok) {
+                    if (statusEl) {
+                        statusEl.textContent = "Detail updated successfully.";
+                        statusEl.className = "mt-4 text-sm text-green-600";
+                    }
+                    fetchDetails();
+                } else {
+                    const err = await res.json();
+                    if (statusEl) {
+                        statusEl.textContent =
+                            "Error: " + (err.error || "Unknown error");
+                        statusEl.className = "mt-4 text-sm text-red-600";
+                    }
+                }
+            }
+
+            async function deleteDetail(code) {
+                if (!confirm("Delete detail " + code + "?")) return;
+                const statusEl = el("detail-status");
+                if (statusEl) statusEl.textContent = "";
+                const res = await fetch(`${baseUrl}/api/model_detail/${code}`, {
+                    method: "DELETE",
+                });
+                if (res.ok) {
+                    if (statusEl) {
+                        statusEl.textContent = "Detail deleted successfully.";
+                        statusEl.className = "mt-4 text-sm text-green-600";
+                    }
+                    fetchDetails();
+                } else {
+                    const err = await res.json();
+                    if (statusEl) {
+                        statusEl.textContent =
+                            "Error: " + (err.error || "Unknown error");
+                        statusEl.className = "mt-4 text-sm text-red-600";
+                    }
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                fetchModels();
+                fetchDetails();
+            });
+        </script>
+    </body>
+</Layout>
