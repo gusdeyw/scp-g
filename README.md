@@ -4,7 +4,7 @@ A modern full-stack web application with an integrated code generation system. G
 
 ## 🚀 Features
 
-- **Full-Stack Architecture**: Astro frontend + Python Flask backend + Go API generation
+- **Full-Stack Architecture**: Astro frontend + Go Fiber backend + Go API generation
 - **Code Generation**: Generate complete Go Fiber projects with REST APIs
 - **Database Management**: SQLite-based model and field management
 - **Modern UI**: Clean Astro-based interface with Tailwind CSS
@@ -22,12 +22,13 @@ scp-g/
 │   │   ├── pages/           # Route pages
 │   │   └── styles/          # Global styles
 │   └── public/              # Static assets
-├── api/                     # Backend API (Python Flask)
-│   ├── app.py              # Main Flask application
-│   ├── routes.py           # API endpoints
-│   ├── generate_go.py      # Go code generation
-│   ├── requirements.txt    # Python dependencies
-│   └── test_api.py         # API tests
+├── api/                     # Backend API (Go Fiber)
+│   ├── main.go             # Main Go application
+│   ├── controllers/        # API controllers package
+│   │   ├── controllers.go  # Route handlers
+│   │   └── models.go       # Data models
+│   ├── go.mod              # Go module dependencies
+│   └── go.sum              # Go module checksums
 └── go/                     # Generated Go projects (example)
     ├── main.go            # Fiber application
     ├── models/            # Data models
@@ -42,20 +43,20 @@ scp-g/
 - **Build Tool**: Vite (integrated with Astro)
 
 ### Backend
-- **API Framework**: [Flask](https://flask.palletsprojects.com/) 3.0.3
+- **API Framework**: [Fiber](https://gofiber.io/) v2.52.5
+- **ORM**: [GORM](https://gorm.io/) v1.25
 - **Database**: SQLite3
-- **Code Generation**: Python-based Go project generator
+- **Code Generation**: Go-based project generator
 
 ### Generated Go Projects
 - **Framework**: [Fiber](https://gofiber.io/) v2.52.5
 - **Language**: Go 1.21+
-- **Features**: REST API, CRUD operations, in-memory storage
+- **Features**: REST API, CRUD operations, database integration
 
 ## 📋 Prerequisites
 
 - **Node.js** 18+ (for Astro frontend)
-- **Python** 3.8+ (for Flask backend)
-- **Go** 1.21+ (for generated projects)
+- **Go** 1.21+ (for backend and generated projects)
 
 ## 🚀 Quick Start
 
@@ -65,16 +66,11 @@ git clone https://github.com/gusdeyw/scp-g.git
 cd scp-g
 ```
 
-### 2. Setup Backend (Python Flask)
+### 2. Setup Backend (Go Fiber)
 ```bash
 cd api
-python -m venv venv
-venv\Scripts\activate  # Windows
-# or
-source venv/bin/activate  # macOS/Linux
-
-pip install -r requirements.txt
-python app.py
+go mod tidy
+go run main.go
 ```
 Backend runs on: `http://localhost:5000`
 
@@ -170,10 +166,10 @@ curl -O -J http://localhost:5000/api/generate_go
 ### Backend Development
 ```bash
 cd api
-python app.py              # Start Flask server
-pytest                    # Run tests
-black .                   # Format code
-flake8 .                  # Lint code
+go run main.go           # Start Fiber server
+go test ./...            # Run tests
+go fmt ./...             # Format code
+go vet ./...             # Lint code
 ```
 
 ### Frontend Development
@@ -196,7 +192,7 @@ go run main.go           # Start the generated API
 ### API Testing
 ```bash
 cd api
-pytest test_api.py
+go test ./...
 ```
 
 ### Manual Testing
@@ -207,7 +203,8 @@ Import `api/postman_collection.json` into Postman for comprehensive API testing.
 ### Backend (Production)
 ```bash
 cd api
-gunicorn --bind 0.0.0.0:8000 app:app
+go build -o main .
+./main
 ```
 
 ### Frontend (Production)
@@ -226,9 +223,10 @@ npm run build
 - `src/styles/` - Global CSS and Tailwind config
 
 ### Backend (`api/`)
-- `app.py` - Flask application factory
-- `routes.py` - API route definitions
-- `generate_go.py` - Go code generation logic
+- `main.go` - Fiber application entry point
+- `controllers/controllers.go` - API route handlers
+- `controllers/models.go` - Data models and database schemas
+- `go.mod` - Go module dependencies
 - `production.db` - SQLite database
 
 ### Generated Go Projects
@@ -252,8 +250,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 - [Astro](https://astro.build/) - The web framework for content-driven websites
-- [Flask](https://flask.palletsprojects.com/) - The Python micro framework
 - [Fiber](https://gofiber.io/) - Express-inspired web framework for Go
+- [GORM](https://gorm.io/) - The fantastic ORM library for Golang
 - [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
 
 ---

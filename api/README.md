@@ -1,13 +1,14 @@
 # Go API Backend
 
-This is a Go backend implementation using Fiber and GORM that mimics the Python Flask API for the SCP-G CRUD Generator.
+This is the Go backend implementation using Fiber and GORM for the SCP-G CRUD Generator.
 
 ## Features
 
-- RESTful API with the same endpoints as the Python version
+- RESTful API with comprehensive CRUD operations
 - SQLite database with GORM ORM
 - Fiber web framework
 - Docker support
+- Code generation for Go projects
 
 ## API Endpoints
 
@@ -44,7 +45,7 @@ This is a Go backend implementation using Fiber and GORM that mimics the Python 
 
 ### Installation
 ```bash
-cd api_go
+cd api
 go mod tidy
 go run .
 ```
@@ -55,9 +56,9 @@ The API will be available at `http://localhost:5000`
 
 ### Build and Run
 ```bash
-cd api_go
-docker build -t scp-g-api-go .
-docker run -p 5000:5000 scp-g-api-go
+cd api
+docker build -t scp-g-api .
+docker run -p 5000:5000 scp-g-api
 ```
 
 ## Database
@@ -74,9 +75,11 @@ The following configurations are seeded on first run:
 
 ### Project Structure
 ```
-api_go/
+api/
 ├── main.go          # Application entry point and routing
-├── handlers.go      # API endpoint handlers
+├── controllers/
+│   ├── controllers.go # API endpoint handlers
+│   └── models.go      # Data models and database schemas
 ├── go.mod          # Go module dependencies
 ├── Dockerfile      # Docker configuration
 ├── .gitignore     # Git ignore rules
@@ -90,7 +93,7 @@ api_go/
 
 ## Testing
 
-You can test the API using the same Postman collection as the Python version, or use curl:
+You can test the API using the Postman collection, or use curl:
 
 ```bash
 # Get all configs

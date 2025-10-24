@@ -1,20 +1,35 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Build stage
+FROM golang:1.21-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy go mod files
+COPY go.mod go.sum ./
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Download dependencies
+RUN go mod download
 
-# Copy application code
+# Copy source code
 COPY . .
 
-# Expose port 5000
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+# Final stage
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy the binary from builder stage
+COPY --from=builder /app/main .
+
+# Copy database file if it exists
+COPY --from=builder /app/production.db* ./
+
+# Expose port
 EXPOSE 5000
 
-# Run the application
-CMD ["python", "app.py"]
+# Command to run
+CMD ["./main"]

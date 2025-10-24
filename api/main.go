@@ -7,6 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	"api_go/controllers"
 )
 
 // Database models
@@ -23,11 +25,11 @@ type Model struct {
 }
 
 type ModelDetail struct {
-	ID               uint   `json:"id" gorm:"primaryKey"`
-	ModelCode        string `json:"model_code"`
-	ModelDetailCode  string `json:"model_detail_code" gorm:"unique"`
-	ModelDetailName  string `json:"model_detail_name"`
-	ModelDetailType  string `json:"model_detail_type"`
+	ID              uint   `json:"id" gorm:"primaryKey"`
+	ModelCode       string `json:"model_code"`
+	ModelDetailCode string `json:"model_detail_code" gorm:"unique"`
+	ModelDetailName string `json:"model_detail_name"`
+	ModelDetailType string `json:"model_detail_type"`
 }
 
 var db *gorm.DB
@@ -82,28 +84,28 @@ func main() {
 
 	// Config routes
 	config := app.Group("/api/config")
-	config.Get("/", getAllConfig)
-	config.Get("/:var_conf", getConfig)
-	config.Put("/:var_conf", updateConfig)
+	config.Get("/", controllers.GetAllConfig(db))
+	config.Get("/:var_conf", controllers.GetConfig(db))
+	config.Put("/:var_conf", controllers.UpdateConfig(db))
 
 	// Model routes
 	model := app.Group("/api/model")
-	model.Get("/", getAllModels)
-	model.Post("/", createModel)
-	model.Get("/:table_code", getModel)
-	model.Put("/:table_code", updateModel)
-	model.Delete("/:table_code", deleteModel)
+	model.Get("/", controllers.GetAllModels(db))
+	model.Post("/", controllers.CreateModel(db))
+	model.Get("/:table_code", controllers.GetModel(db))
+	model.Put("/:table_code", controllers.UpdateModel(db))
+	model.Delete("/:table_code", controllers.DeleteModel(db))
 
 	// Model detail routes
 	modelDetail := app.Group("/api/model_detail")
-	modelDetail.Get("/", getAllModelDetails)
-	modelDetail.Post("/", createModelDetail)
-	modelDetail.Get("/:model_detail_code", getModelDetail)
-	modelDetail.Put("/:model_detail_code", updateModelDetail)
-	modelDetail.Delete("/:model_detail_code", deleteModelDetail)
+	modelDetail.Get("/", controllers.GetAllModelDetails(db))
+	modelDetail.Post("/", controllers.CreateModelDetail(db))
+	modelDetail.Get("/:model_detail_code", controllers.GetModelDetail(db))
+	modelDetail.Put("/:model_detail_code", controllers.UpdateModelDetail(db))
+	modelDetail.Delete("/:model_detail_code", controllers.DeleteModelDetail(db))
 
 	// Generate routes
-	app.Get("/api/generate_go", generateGo)
+	app.Get("/api/generate_go", controllers.GenerateGo(db))
 
 	log.Fatal(app.Listen(":5000"))
 }
